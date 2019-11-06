@@ -1,0 +1,11 @@
+#! /bin/bash
+
+tr=$(traceroute -A -n -I www.perdu.com)
+#if echo "$tr" |awk '{print $2}'; then
+#	echo co
+#fi
+#if  echo "$tr" |awk '{print $2}'| grep "*"; then 
+#	echo coucou
+#fi
+
+echo "$tr" | awk '{print $2 $3}'
