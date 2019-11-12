@@ -28,8 +28,9 @@ for compteur in $(seq 1 30); do
 		fi
 	done
 	compteur=$(($compteur+1))
-	echo $as $addr >> $presAddr.txt	
+	echo $as $addr >> addr.txt	
 	if [[ $presAddr == $addr ]]; then
+		echo -e "\n###" >> addr.txt
 		break
 	fi
 	
@@ -38,8 +39,12 @@ done
 # Enregistrement pour le graph
 echo "L'utilitaire Traceroute a atteind avec succès le routeur final 
 Voulez-vous donc créer le graphique Xdot ? [y-n]"
-read $quest 
+read quest
+echo $quest
 if [[ $(echo $quest) = "y" ]]; then 
-	echo $(sudo ./graph.sh $presAddr.txt)
+	echo $(sudo ./graph.sh addr.txt)
 	echo "Le graphique Xdot a été créé"	
+else 
+	echo "Le graphique Xdot n'a pas été créé, veuillez lancer le script graph.sh"
 fi
+
