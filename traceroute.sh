@@ -28,9 +28,9 @@ for compteur in $(seq 1 30); do
 		fi
 	done
 	compteur=$(($compteur+1))
-	echo $as $addr >> addr.txt	
+	echo $addr $as >> addr.txt	
 	if [[ $presAddr == $addr ]]; then
-		echo -e "\n###" >> addr.txt
+		echo -e "###" >> addr.txt
 		break
 	fi
 	
@@ -42,8 +42,10 @@ Voulez-vous donc créer le graphique Xdot ? [y-n]"
 read quest
 echo $quest
 if [[ $(echo $quest) = "y" ]]; then 
-	echo $(sudo ./graph.sh addr.txt)
-	echo "Le graphique Xdot a été créé"	
+	echo $(sudo ./testGraph2.sh )
+	echo "Le graphique Xdot a été créé"
+	echo $(sudo xdot map.dot)
+	echo "Ouverture du fichier Xdot nommé map.dot généré précédemment"
 else 
 	echo "Le graphique Xdot n'a pas été créé, veuillez lancer le script graph.sh"
 fi

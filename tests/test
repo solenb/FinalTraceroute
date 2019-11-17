@@ -1,11 +1,13 @@
-#! /bin/bash
+#!/bin/sh 
+# Fonction qui affiche la parité d'une valeur 
+pair_impair() 
+{ 
+    test `expr $1 % 2` -eq 0 && echo "$1 est pair" || echo "$1 est impair" 
+} 
 
-tr=$(traceroute -A -n -I www.perdu.com)
-#if echo "$tr" |awk '{print $2}'; then
-#	echo co
-#fi
-#if  echo "$tr" |awk '{print $2}'| grep "*"; then 
-#	echo coucou
-#fi
-
-echo "$tr" | awk '{print $2 $3}'
+# Pour chaque nombre passé au programme 
+for nb in $* 
+do 
+    # Vérification de la parité de ce nombre 
+    pair_impair $nb 
+done
