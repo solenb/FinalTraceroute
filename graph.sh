@@ -1,28 +1,41 @@
 #! /bin/bash
+#	Solen BELLOUATI
+#	RT2-M3102_Cartographie
+#	SCRIPT-Graph
+#
+#	Ce script a pour but de créer, à partir de l'analyse d'un fichier texte (addr.txt) comportant 
+#	les résulats d'une commande Traceroute, un graphique Xdot montrant le chemin parcouru par les paquets IP.
+#
 
-#file=${2:?"Vous devez fournir le nom du fichier .dot en argument."}
-nbLignes=$(echo $(wc -l addr.txt)|awk '{print $1}')
-nblignes=$(($nbLignes*2))
-echo $nbLignes
-compteur=0
-if [ -f addr.txt ]; then
+
+
+echo -n $(rm -rf map.dot)											#Commande permettant de remettre à zéro le précédent fichier Xdot
+
+if [ -f addr.txt ]; then 											#Test de présence du fichier addr.txt
+	nbLignes=$(echo $(wc -l addr.txt)|awk '{print $1}') 							#Stockage dans une variable du nombre de lignes présentes dans le fichier addr.txt
+	lastLigne=$(echo $(cat -v addr.txt | sed -n "$nbLignes p"))						#Stockage dans une variable de la dernière chaîne de caractère du fichier addr.txt
 	echo "digraph map {" >> map.dot
-	for ((i=1; i<=$nbLignes; i+=2)); do
-		saut=$(($i + 1))
-		compteur=$(($compteur + 1))
-		echo "compteur: $compteur"
-		ip1=$(echo $(cat addr.txt | sed -n "$i p"))  
-		ip2=$(echo $(cat addr.txt | sed -n "$saut p"))
-		cache=$ip2
-		echo "cache: $cache"
-		if [test `expr $compteur % 2` == 0]; then
-			echo "$cache -> $ip2"
-			echo b
-		else
-			echo "$ip1 -> $ip2"
-			echo c
+	for i in $(seq 1 $nbLignes); do 									#Boucle permettant d'analyser chaque ligne du fichier addr.txt
+		ligne=$(echo $(cat -v addr.txt | sed -n "$i p"))						#Stockage dans une variable de la ligne courante
+		next=$(($i + 1))						
+		ligneSuivante=$(echo $(cat -v addr.txt | sed -n "$next p"))	
+		if [[ $lastLigne == $ligne ]];then 								#Test permettant de savoir si la ligne courante est la dernière
+			echo $(sed 's/###//g' addr.txt) 							#Commande permettant de remplacer la chaîne de fin de commande Traceroute par une chaîne vide
+			echo -e "\n}" >> map.dot				
 		fi
-       	done	       
+		nbDoublons=$(echo $(cat -n map.dot | grep "}" | wc -l)) 					#Recherche du nombre d'occurence du caractère "}"
+		nbSupr=$(($nbDoublons - 1)) 									#Nombre de doublons à supprimer en enlevant le dernier
+		if [[ $nbDoublons -ge 2 ]];then									#Test permettant de déterminer si il y a des doublons du caractère "}" 
+			for sup in $(seq 1 $nbSupr);do 								#Boucle permettant d'isoler et de supprimer les doublons de "}" se trouvant avant la fin du graphique Xdot
+				numLigne=$(echo $(cat -n map.dot | grep "}" | head -n $sup | awk '{print $1}')) #Numéro de la ligne comportant un doublon
+				echo $(sed -i "$dataLigne d" map.dot)						#Suppression du doublon	
+			done
+		fi
+		if  [[ ! $ligne == "###" ]] && [[ ! $ligneSuivante == "###" ]];then 				#Test permettant de déterminer si ni la ligne courante ni la suivante n'est la dernière
+			echo -e "\n\t \"$ligne\"" "->" >> map.dot 						#Ecriture de la ligne courante dans le fichier map.dot
+			echo  -e "\"$ligneSuivante\";" >> map.dot						#Ecriture de la ligne suivante dans le fichier map.dot
+		fi
+	done       
 
 
 else 
