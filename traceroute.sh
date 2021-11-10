@@ -8,6 +8,7 @@
 #	Ce script peut en fonction de la réponse ou non d'un saut à une méthode en choisir une autre.
 #	Il automatise la création du graphique Xdot en demandant à la fin à l'utilisateur si il 
 #	souhaite créer le graphique Xdot.
+#
 
 
 presAddr=${1:?"Vous devez fournir l'adresse à atteindre en argument."} 								#Test de présence de l'argument (adresse IPV4)
